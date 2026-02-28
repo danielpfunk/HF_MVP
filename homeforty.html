@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeForty — Member Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --soil:    #2C1A0E;
+    --bark:    #4A2E1A;
+    --clay:    #7D4E2A;
+    --wheat:   #C49A5A;
+    --straw:   #E8D5A3;
+    --cream:   #F5EDD8;
+    --parchment: #FAF5EC;
+    --fog:     #8B7355;
+    --accent:  #8B4513;
+    --gold:    #B8860B;
+    --leaf:    #4A6741;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--parchment);
+    color: var(--soil);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--soil);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    border-bottom: 1px solid rgba(196,154,90,0.3);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--wheat);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo span {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--straw);
+    opacity: 0.7;
+    font-size: 13px;
+    margin-left: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--straw);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--wheat); }
+
+  .nav-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--soil);
+    background: var(--wheat);
+    padding: 5px 14px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: var(--soil);
+    overflow: hidden;
+    padding-top: 64px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(74,46,26,0.8) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(139,69,19,0.2) 0%, transparent 60%),
+      linear-gradient(160deg, #1a0d05 0%, #2C1A0E 40%, #3d2212 100%);
+  }
+
+  .hero-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 48px,
+      rgba(196,154,90,1) 48px,
+      rgba(196,154,90,1) 49px
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-left {}
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    opacity: 0.8;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--wheat);
+    opacity: 0.5;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    margin-bottom: 32px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--wheat);
+    display: block;
+  }
+
+  .hero-body {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--straw);
+    opacity: 0.75;
+    max-width: 420px;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 16px 40px;
+    background: var(--wheat);
+    color: var(--soil);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.25s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: var(--straw);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.6;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(232,213,163,0.3);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .btn-ghost:hover { opacity: 1; }
+
+  /* Hero right — stat cards */
+  .hero-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(196,154,90,0.2);
+    border: 1px solid rgba(196,154,90,0.2);
+  }
+
+  .stat-card {
+    background: rgba(44,26,14,0.8);
+    padding: 32px 28px;
+    backdrop-filter: blur(4px);
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    opacity: 0.6;
+    margin-bottom: 14px;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-value em {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--wheat);
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--straw);
+    opacity: 0.5;
+    line-height: 1.5;
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-eyebrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--clay);
+    opacity: 0.25;
+    max-width: 60px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--soil);
+    margin-bottom: 20px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--clay);
+  }
+
+  .section-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--bark);
+    opacity: 0.8;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  /* ── PHILOSOPHY SECTION ── */
+  #philosophy {
+    background: var(--cream);
+    border-top: 1px solid rgba(125,78,42,0.15);
+  }
+
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 64px;
+  }
+
+  .philosophy-left {}
+
+  .pullquote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3vw, 32px);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--clay);
+    border-left: 3px solid var(--wheat);
+    padding-left: 28px;
+    margin-bottom: 32px;
+  }
+
+  .philosophy-body {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--bark);
+    opacity: 0.8;
+  }
+
+  .philosophy-body + .philosophy-body { margin-top: 18px; }
+
+  .philosophy-right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 8px;
+  }
+
+  .principle-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 24px;
+    background: var(--parchment);
+    border-left: 2px solid var(--wheat);
+  }
+
+  .principle-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--wheat);
+    opacity: 0.5;
+    line-height: 1;
+    min-width: 36px;
+  }
+
+  .principle-text {}
+
+  .principle-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 8px;
+  }
+
+  .principle-body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--bark);
+    opacity: 0.75;
+  }
+
+  /* ── BENEFITS ── */
+  #benefits {
+    background: var(--soil);
+  }
+
+  #benefits .section-title { color: var(--cream); }
+  #benefits .section-body { color: var(--straw); }
+  #benefits .section-eyebrow { color: var(--wheat); }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(196,154,90,0.15);
+    border: 1px solid rgba(196,154,90,0.15);
+    margin-top: 56px;
+  }
+
+  .benefit-card {
+    background: rgba(26,13,5,0.6);
+    padding: 44px 36px;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .benefit-card:hover {
+    background: rgba(74,46,26,0.5);
+  }
+
+  .benefit-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .benefit-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .benefit-body {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--straw);
+    opacity: 0.65;
+  }
+
+  .benefit-highlight {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--wheat);
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(196,154,90,0.2);
+  }
+
+  /* ── PATRONAGE ── */
+  #patronage {
+    background: var(--parchment);
+    border-top: 1px solid rgba(125,78,42,0.12);
+  }
+
+  .patronage-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    margin-top: 60px;
+    align-items: start;
+  }
+
+  .patronage-explain {}
+
+  .how-it-works {
+    margin-top: 40px;
+  }
+
+  .step-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 32px;
+    align-items: flex-start;
+  }
+
+  .step-dot {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--wheat);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--wheat);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content {}
+
+  .step-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 6px;
+  }
+
+  .step-body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--bark);
+    opacity: 0.75;
+  }
+
+  /* Patronage calculator */
+  .patronage-calc {
+    background: var(--soil);
+    padding: 44px;
+    color: var(--cream);
+  }
+
+  .calc-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    margin-bottom: 32px;
+    opacity: 0.8;
+  }
+
+  .calc-field {
+    margin-bottom: 28px;
+  }
+
+  .calc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.5;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .calc-label span {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--wheat);
+    opacity: 1;
+    font-style: normal;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .calc-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1px;
+    background: rgba(196,154,90,0.3);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .calc-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--wheat);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .calc-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(232,213,163,0.3);
+    margin-top: 6px;
+  }
+
+  .calc-divider {
+    height: 1px;
+    background: rgba(196,154,90,0.15);
+    margin: 32px 0;
+  }
+
+  .calc-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(196,154,90,0.15);
+  }
+
+  .calc-result-cell {
+    background: rgba(44,26,14,0.5);
+    padding: 20px;
+  }
+
+  .result-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.4;
+    margin-bottom: 8px;
+  }
+
+  .result-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--wheat);
+    line-height: 1;
+  }
+
+  .result-value.highlight {
+    color: var(--cream);
+    font-size: 32px;
+  }
+
+  .result-sub {
+    font-size: 11px;
+    color: var(--straw);
+    opacity: 0.4;
+    margin-top: 4px;
+  }
+
+  .tenure-note {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(139,69,19,0.15);
+    border-left: 2px solid var(--accent);
+  }
+
+  .tenure-note-text {
+    font-size: 12px;
+    color: var(--straw);
+    opacity: 0.65;
+    line-height: 1.6;
+  }
+
+  .tenure-note-text strong {
+    color: var(--wheat);
+    font-weight: 400;
+  }
+
+  /* ── PERK CALCULATOR ── */
+  #calculator {
+    background: var(--cream);
+    border-top: 1px solid rgba(125,78,42,0.12);
+  }
+
+  .perk-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-bottom: 56px;
+    align-items: end;
+  }
+
+  .crop-toggle {
+    display: flex;
+    border: 1.5px solid var(--clay);
+    width: fit-content;
+    margin-bottom: 40px;
+  }
+
+  .crop-btn {
+    padding: 11px 32px;
+    border: none;
+    background: transparent;
+    color: var(--fog);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .crop-btn + .crop-btn { border-left: 1.5px solid var(--clay); }
+  .crop-btn.active { background: var(--soil); color: var(--wheat); }
+  .crop-btn:hover:not(.active) { color: var(--soil); }
+
+  .global-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 20px 24px;
+    border: 1px solid rgba(125,78,42,0.2);
+    flex-wrap: wrap;
+    margin-bottom: -1px;
+  }
+
+  .global-row + .global-row { margin-bottom: 40px; }
+
+  .global-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--fog);
+    min-width: 120px;
+  }
+
+  .global-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--soil);
+    min-width: 100px;
+  }
+
+  .slider-wrap { flex: 1; min-width: 160px; }
+
+  input[type="range"].g-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1px;
+    background: rgba(125,78,42,0.3);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"].g-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: var(--soil);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  input[type="range"].g-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+  .p-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(139,115,85,0.5);
+    margin-top: 6px;
+  }
+
+  .section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .section-label-sm {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fog);
+  }
+
+  .add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px solid var(--soil);
+    color: var(--soil);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-btn:hover { background: var(--soil); color: var(--wheat); }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .hybrid-card {
+    border: 1.5px solid rgba(125,78,42,0.25);
+    padding: 28px;
+    position: relative;
+    background: var(--parchment);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    animation: cardIn 0.3s ease both;
+  }
+
+  .hybrid-card:hover {
+    border-color: var(--clay);
+    box-shadow: 0 4px 20px rgba(44,26,14,0.08);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+  }
+
+  .hybrid-tier {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fog);
+    margin-bottom: 6px;
+  }
+
+  .hybrid-name-input {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--soil);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+    padding-bottom: 2px;
+  }
+
+  .hybrid-name-input:focus { border-bottom-color: var(--clay); }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--fog);
+    opacity: 0.4;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 0 0 8px;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover { opacity: 1; color: var(--accent); }
+
+  .price-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .price-col label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fog);
+    display: block;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  .price-col-our label { color: var(--leaf); }
+
+  .price-input-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  .price-symbol {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--fog);
+  }
+
+  .price-col-our .price-symbol { color: var(--leaf); }
+
+  .perk-input {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    border-bottom: 1px solid rgba(125,78,42,0.3);
+    background: transparent;
+    width: 60px;
+    outline: none;
+    color: var(--fog);
+    transition: border-color 0.2s;
+  }
+
+  .price-col-our .perk-input { color: var(--leaf); }
+  .perk-input:focus { border-bottom-color: var(--clay); }
+
+  .perk-k {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--fog);
+    opacity: 0.5;
+    margin-left: 2px;
+  }
+
+  .acres-row { margin-bottom: 0; }
+
+  .acres-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .acres-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fog);
+    opacity: 0.6;
+  }
+
+  .acres-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--soil);
+  }
+
+  .card-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1px;
+    background: rgba(125,78,42,0.25);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .card-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--soil);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .card-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+  .card-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(139,115,85,0.4);
+    margin-top: 5px;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(125,78,42,0.15);
+  }
+
+  .card-cost-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fog);
+    opacity: 0.5;
+    margin-bottom: 4px;
+  }
+
+  .card-bags {
+    font-size: 12px;
+    color: var(--fog);
+    opacity: 0.5;
+  }
+
+  .card-cost-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--soil);
+  }
+
+  .card-savings-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--leaf);
+    text-align: right;
+    margin-top: 3px;
+  }
+
+  /* Summary */
+  .summary {
+    background: var(--soil);
+    padding: 36px 40px;
+    color: var(--cream);
+    margin-bottom: 0;
+  }
+
+  .summary-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    opacity: 0.6;
+    margin-bottom: 24px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid rgba(196,154,90,0.15);
+    margin-bottom: 0;
+  }
+
+  .summary-cell {
+    padding: 20px 24px;
+    border-right: 1px solid rgba(196,154,90,0.1);
+  }
+
+  .summary-cell:last-child { border-right: none; }
+
+  .sum-cell-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.4;
+    margin-bottom: 8px;
+  }
+
+  .sum-cell-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .sum-cell-val.muted { color: var(--straw); opacity: 0.4; text-decoration: line-through; }
+
+  .savings-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: rgba(139,69,19,0.2);
+    margin-top: 0;
+    border: 1px solid rgba(196,154,90,0.15);
+    border-top: none;
+  }
+
+  .savings-left strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 3px;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .savings-left span {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--straw);
+    opacity: 0.4;
+    letter-spacing: 0.1em;
+  }
+
+  .savings-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--wheat);
+    line-height: 1;
+  }
+
+  /* Patronage row below summary */
+  .patronage-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    background: rgba(74,103,65,0.15);
+    border: 1px solid rgba(74,103,65,0.3);
+    border-top: none;
+  }
+
+  .pat-row-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.7;
+  }
+
+  .pat-row-right {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #8fbc7f;
+  }
+
+  /* Soy tab */
+  .soy-panel {
+    background: var(--parchment);
+    border: 1.5px solid rgba(125,78,42,0.2);
+    padding: 36px;
+    margin-bottom: 32px;
+  }
+
+  .soy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .soy-tier {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--fog);
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+
+  .soy-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--soil);
+  }
+
+  .soy-prices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 28px;
+  }
+
+  .soy-price-item label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fog);
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+
+  .soy-price-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--soil);
+    margin-bottom: 4px;
+  }
+
+  .soy-price-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--fog);
+    opacity: 0.5;
+  }
+
+  .soy-acres-wrap { margin-top: 8px; }
+
+  .hidden { display: none; }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 56px 32px;
+    border: 1.5px dashed rgba(125,78,42,0.25);
+    color: var(--fog);
+  }
+
+  .empty-state p {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  /* ── SYNDICATE ── */
+  #syndicate {
+    background: var(--soil);
+    border-top: 4px solid var(--gold);
+  }
+
+  #syndicate .section-title { color: var(--cream); }
+  #syndicate .section-body { color: var(--straw); opacity: 0.65; }
+  #syndicate .section-eyebrow { color: var(--wheat); }
+
+  .syndicate-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    margin-top: 56px;
+    align-items: start;
+  }
+
+  .syndicate-left {}
+
+  .access-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    opacity: 0.6;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    border: 1px solid rgba(196,154,90,0.2);
+    display: inline-block;
+  }
+
+  .syndicate-body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--straw);
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+
+  .syndicate-deal {
+    background: rgba(44,26,14,0.6);
+    border: 1px solid rgba(196,154,90,0.2);
+    padding: 36px;
+    margin-top: 40px;
+  }
+
+  .deal-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .deal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .deal-body {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--straw);
+    opacity: 0.6;
+    margin-bottom: 24px;
+  }
+
+  .deal-terms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(196,154,90,0.1);
+    border: 1px solid rgba(196,154,90,0.1);
+  }
+
+  .deal-term {
+    background: rgba(26,13,5,0.5);
+    padding: 16px;
+  }
+
+  .deal-term-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.4;
+    margin-bottom: 6px;
+  }
+
+  .deal-term-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--wheat);
+  }
+
+  .syndicate-right {}
+
+  .why-matters {
+    background: rgba(26,13,5,0.4);
+    border: 1px solid rgba(196,154,90,0.15);
+    padding: 36px;
+  }
+
+  .wm-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    opacity: 0.6;
+    margin-bottom: 28px;
+  }
+
+  .wm-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+
+  .wm-item:last-child { margin-bottom: 0; }
+
+  .wm-dash {
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .wm-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--straw);
+    opacity: 0.65;
+  }
+
+  .wm-text strong {
+    color: var(--cream);
+    font-weight: 700;
+    opacity: 1;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  .syndicate-disclaimer {
+    margin-top: 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--straw);
+    opacity: 0.3;
+    line-height: 1.6;
+  }
+
+  /* ── APPLY ── */
+  #apply {
+    background: var(--wheat);
+    border-top: none;
+  }
+
+  .apply-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .apply-left {}
+
+  .apply-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--soil);
+    opacity: 0.6;
+    margin-bottom: 20px;
+  }
+
+  .apply-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--soil);
+    margin-bottom: 20px;
+  }
+
+  .apply-body {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--soil);
+    opacity: 0.65;
+    margin-bottom: 36px;
+  }
+
+  .apply-form {}
+
+  .form-field {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--soil);
+    opacity: 0.6;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(44,26,14,0.08);
+    border: 1.5px solid rgba(44,26,14,0.2);
+    color: var(--soil);
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--soil); }
+
+  .form-input::placeholder { color: rgba(44,26,14,0.3); }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--soil);
+    opacity: 0.45;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  .btn-apply {
+    width: 100%;
+    padding: 18px;
+    background: var(--soil);
+    color: var(--wheat);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 24px;
+  }
+
+  .btn-apply:hover { opacity: 0.85; }
+
+  .apply-right-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .req-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px;
+    background: rgba(44,26,14,0.07);
+    border-left: 2px solid var(--soil);
+  }
+
+  .req-check {
+    font-size: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .req-text {}
+
+  .req-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--soil);
+    margin-bottom: 5px;
+  }
+
+  .req-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--soil);
+    opacity: 0.6;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--soil);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(196,154,90,0.1);
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--wheat);
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--straw);
+    opacity: 0.25;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero-content { grid-template-columns: 1fr; gap: 48px; padding: 60px 24px; }
+    .hero-right { display: none; }
+    .section-inner { padding: 72px 24px; }
+    .philosophy-grid { grid-template-columns: 1fr; gap: 40px; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .patronage-layout { grid-template-columns: 1fr; gap: 40px; }
+    .syndicate-layout { grid-template-columns: 1fr; gap: 40px; }
+    .apply-inner { grid-template-columns: 1fr; gap: 48px; }
+    .perk-header { grid-template-columns: 1fr; gap: 24px; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .soy-prices { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-tag { animation: fadeUp 0.7s 0.1s both; }
+  .hero-title { animation: fadeUp 0.7s 0.2s both; }
+  .hero-body { animation: fadeUp 0.7s 0.35s both; }
+  .hero-cta-row { animation: fadeUp 0.7s 0.5s both; }
+  .hero-right { animation: fadeUp 0.7s 0.4s both; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">HomeForty <span>Members Only</span></div>
+  <ul class="nav-links">
+    <li><a href="#philosophy">The Case</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+    <li><a href="#patronage">Patronage</a></li>
+    <li><a href="#calculator">PerK Pricing</a></li>
+    <li><a href="#syndicate">The Syndicate</a></li>
+    <li><a href="#apply">Apply</a></li>
+  </ul>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-tag">HomeForty · Member Program</div>
+      <h1 class="hero-title">
+        Built for farmers<br>
+        who build<br>
+        <em>real things.</em>
+      </h1>
+      <p class="hero-body">
+        HomeForty is not a loyalty program. It is a partnership — built around patronage returns, precision pricing, and access to investment opportunities that most operators will never see. You earn your way in. You stay because it pays.
+      </p>
+      <div class="hero-cta-row">
+        <a href="#apply" class="btn-primary">Request Membership</a>
+        <button class="btn-ghost" onclick="document.getElementById('philosophy').scrollIntoView({behavior:'smooth'})">See How It Works</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card">
+        <div class="stat-label">Annual Patronage</div>
+        <div class="stat-value">2.5<em>%</em></div>
+        <div class="stat-sub">Of seed purchases returned annually. Cash in hand, every February.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pricing Model</div>
+        <div class="stat-value"><em>Per</em>K</div>
+        <div class="stat-sub">Priced per thousand seeds. Precision billing for precision operators.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">The Syndicate</div>
+        <div class="stat-value">SPV<em>s</em></div>
+        <div class="stat-sub">Deal-by-deal investment access. Agricultural ventures you can evaluate yourself.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Qualification</div>
+        <div class="stat-value">500<em>+</em></div>
+        <div class="stat-sub">Units of corn. The floor for serious operators. The door to HomeForty.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="section-inner">
+    <div class="section-eyebrow">The Case for HomeForty</div>
+    <h2 class="section-title">Every company wants<br>your volume. <em>We want your partnership.</em></h2>
+
+    <div class="philosophy-grid">
+      <div class="philosophy-left">
+        <div class="pullquote">
+          "The people who build a company's success should share in what that success creates."
+        </div>
+        <p class="philosophy-body">
+          Most seed companies will offer you a deal in year one. A discount. A rebate. An early order incentive. Then they'll be back at your door the following year with another deal — hoping you haven't taken the call from the competitor who beat their number.
+        </p>
+        <p class="philosophy-body">
+          That is not a partnership. That is a transaction dressed up as one. HomeForty is built differently. We return value to the farms that commit to us — not through discounts that disappear, but through contractual patronage that accumulates in your name, precision pricing that reflects how sophisticated operators actually buy, and access to investment opportunities most farmers never see.
+        </p>
+        <p class="philosophy-body">
+          You are not a customer here. You are a member. The distinction is not marketing language. It is a legal and financial commitment we make to you every year you buy seed.
+        </p>
+      </div>
+      <div class="philosophy-right">
+        <div class="principle-item">
+          <div class="principle-num">01</div>
+          <div class="principle-text">
+            <div class="principle-title">Patronage, Not Promises</div>
+            <div class="principle-body">Your purchase volume generates a contractual return, paid annually in cash, with a retained portion building toward a defined exit payout. Not a promise. A certificate.</div>
+          </div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-num">02</div>
+          <div class="principle-text">
+            <div class="principle-title">Pricing That Matches How You Farm</div>
+            <div class="principle-body">Priced per thousand seeds — the way precision operators think. Your seeding rate, your population, your cost. Calculated to the kernel, not the bag.</div>
+          </div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-num">03</div>
+          <div class="principle-text">
+            <div class="principle-title">Access That Can't Be Bought</div>
+            <div class="principle-body">Membership earns you a seat in The Syndicate — vetted agricultural investment opportunities, structured deal-by-deal, available only to HomeForty members.</div>
+          </div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-num">04</div>
+          <div class="principle-text">
+            <div class="principle-title">The Longer You Stay, The More You Earn</div>
+            <div class="principle-body">Patronage rates increase with tenure. Year five members earn at a higher rate than year one members. Loyalty compounds. That is the point.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <div class="section-inner">
+    <div class="section-eyebrow">What You Receive</div>
+    <h2 class="section-title">Four things no<br><em>competitor offers.</em></h2>
+    <p class="section-body">Each benefit is real, contractual, and delivered. Not a program on paper.</p>
+
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <span class="benefit-icon">⟁</span>
+        <div class="benefit-title">Annual Cash Patronage</div>
+        <div class="benefit-body">A percentage of your annual seed purchases is allocated to you as patronage. Half paid in cash within 60 days of year-end. Half retained in your name, accumulating toward an exit-event payout.</div>
+        <div class="benefit-highlight">2.5% base · escalates with tenure · paid every February</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">◈</span>
+        <div class="benefit-title">Retained Credit Balance</div>
+        <div class="benefit-body">The deferred half of your patronage accumulates in a named ledger. If the company is sold, those credits convert to a cash payment based on a formula written into your membership agreement today.</div>
+        <div class="benefit-highlight">Contractual · calculable · no discretion at exit</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">◬</span>
+        <div class="benefit-title">PerK Precision Pricing</div>
+        <div class="benefit-body">Seed priced per thousand kernels — not per bag. You pay for what you plant, at the population your operation demands. Compare your current cost per thousand against ours and see the difference in real time.</div>
+        <div class="benefit-highlight">Use the calculator below · corn & soybeans</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">⬡</span>
+        <div class="benefit-title">The Syndicate Access</div>
+        <div class="benefit-body">HomeForty membership earns you first access to The Syndicate — agricultural investment opportunities structured as individual SPVs. Deal by deal. No obligation. Agricultural businesses you can evaluate with your own expertise.</div>
+        <div class="benefit-highlight">First deal: biological company · 2026</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">↑</span>
+        <div class="benefit-title">Tenure Acceleration</div>
+        <div class="benefit-body">Your patronage rate is not static. It rises as your membership deepens. Year three and four members earn at 3%. Year five and beyond earn at 3.5%. The farm that commits earliest builds the most.</div>
+        <div class="benefit-highlight">Year 1–2: 2.5% · Year 3–4: 3% · Year 5+: 3.5%</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">◉</span>
+        <div class="benefit-title">Annual Member Summit</div>
+        <div class="benefit-body">Once a year, HomeForty members gather. Agronomic updates, deal presentations from Syndicate opportunities, peer discussion among the most serious farm operators in the region. Access to this community is earned, not purchased.</div>
+        <div class="benefit-highlight">By invitation · members only · Syndicate deal flow presented</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATRONAGE -->
+<section id="patronage">
+  <div class="section-inner">
+    <div class="section-eyebrow">How Patronage Works</div>
+    <h2 class="section-title">Your purchases build<br><em>a financial position.</em></h2>
+
+    <div class="patronage-layout">
+      <div class="patronage-explain">
+        <p class="section-body">
+          Patronage is not a rebate program. It is a contractual obligation — documented in your HomeForty Membership Agreement before the purchase year begins. It operates in two parts simultaneously.
+        </p>
+
+        <div class="how-it-works" style="margin-top:40px;">
+          <div class="step-row">
+            <div class="step-dot">01</div>
+            <div class="step-content">
+              <div class="step-title">Annual Cash Payment</div>
+              <div class="step-body">Within 60 days of fiscal year-end, 50% of your patronage allocation is paid in cash. No discretion. No board vote required on your portion. The obligation is established before you place your first order.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-dot">02</div>
+            <div class="step-content">
+              <div class="step-title">Retained Credit Accumulation</div>
+              <div class="step-body">The other 50% is logged to your named account in dollar terms — not units, not credits, not points. Dollars. You see the balance grow on your annual statement every February.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-dot">03</div>
+            <div class="step-content">
+              <div class="step-title">Exit Conversion Formula</div>
+              <div class="step-body">At a triggering event — sale of the company, defined distribution — your retained balance converts to cash using a formula agreed today. Your balance ÷ all member balances × 5% of net proceeds. You can calculate your payout right now with hypothetical numbers.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-dot">04</div>
+            <div class="step-content">
+              <div class="step-title">Eight-Year Rotation</div>
+              <div class="step-body">Retained balances older than eight years pay out in cash regardless of any triggering event. The program honors its commitments on a rolling basis — you don't have to wait for a company sale to see your retained credits converted.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-dot">05</div>
+            <div class="step-content">
+              <div class="step-title">Optional Syndicate Rollover</div>
+              <div class="step-body">Each year, you elect what happens to your cash patronage payment. Take it as cash. Hold it. Or redirect it into the current Syndicate SPV — deploying earnings from your seed purchases into agricultural investments you believe in.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patronage Calculator -->
+      <div class="patronage-calc">
+        <div class="calc-title">Patronage Estimator</div>
+
+        <div class="calc-field">
+          <div class="calc-label">
+            Annual Seed Purchases
+            <span id="pat-purchase-display">$150,000</span>
+          </div>
+          <input type="range" class="calc-range" id="pat-purchases"
+            min="50000" max="800000" step="10000" value="150000"
+            oninput="updatePatronage()">
+          <div class="range-labels"><span>$50K</span><span>$400K</span><span>$800K</span></div>
+        </div>
+
+        <div class="calc-field">
+          <div class="calc-label">
+            Membership Year
+            <span id="pat-year-display">Year 1</span>
+          </div>
+          <input type="range" class="calc-range" id="pat-year"
+            min="1" max="7" step="1" value="1"
+            oninput="updatePatronage()">
+          <div class="range-labels"><span>Year 1</span><span>Year 4</span><span>Year 7+</span></div>
+        </div>
+
+        <div class="calc-divider"></div>
+
+        <div class="calc-results">
+          <div class="calc-result-cell">
+            <div class="result-label">Patronage Rate</div>
+            <div class="result-value" id="pat-rate-display">2.5%</div>
+            <div class="result-sub">based on tenure</div>
+          </div>
+          <div class="calc-result-cell">
+            <div class="result-label">Total Allocation</div>
+            <div class="result-value" id="pat-total-display">$3,750</div>
+            <div class="result-sub">this year</div>
+          </div>
+          <div class="calc-result-cell">
+            <div class="result-label">Cash — February</div>
+            <div class="result-value highlight" id="pat-cash-display">$1,875</div>
+            <div class="result-sub">paid within 60 days</div>
+          </div>
+          <div class="calc-result-cell">
+            <div class="result-label">Retained Credits</div>
+            <div class="result-value" id="pat-retained-display">$1,875</div>
+            <div class="result-sub">building your balance</div>
+          </div>
+        </div>
+
+        <div class="calc-divider"></div>
+
+        <div class="calc-field">
+          <div class="calc-label">
+            Projected Balance After
+            <span id="pat-years-display">5 Years</span>
+          </div>
+          <input type="range" class="calc-range" id="pat-proj-years"
+            min="2" max="10" step="1" value="5"
+            oninput="updatePatronage()">
+          <div class="range-labels"><span>2 yrs</span><span>6 yrs</span><span>10 yrs</span></div>
+        </div>
+
+        <div class="calc-results">
+          <div class="calc-result-cell" style="grid-column: 1 / -1;">
+            <div class="result-label">Cumulative Retained Balance</div>
+            <div class="result-value highlight" id="pat-balance-display">$9,375</div>
+            <div class="result-sub" id="pat-balance-sub">at $20M exit, converts to approx. $X</div>
+          </div>
+        </div>
+
+        <div class="tenure-note">
+          <div class="tenure-note-text">
+            <strong>Tenure matters.</strong> Year 5+ members earn at 3.5% — 40% more than year one. A farm buying $300K annually earns $10,500 per year at maturity versus $7,500 at entry. The program rewards the farms that stay.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERK CALCULATOR -->
+<section id="calculator">
+  <div class="section-inner">
+    <div class="section-eyebrow">PerK Pricing</div>
+    <h2 class="section-title">Priced per thousand seeds.<br><em>The way precision farms think.</em></h2>
+
+    <div class="perk-header">
+      <div>
+        <p class="section-body">
+          Seed priced per thousand kernels — the way precision operators think. Set your seeding rate, add your hybrids, and see your exact cost by acre and by order. No bag math. No approximations. This is how serious operations buy seed.
+        </p>
+      </div>
+      <div>
+        <div class="crop-toggle">
+          <button class="crop-btn active" id="btn-corn" onclick="setTab('corn')">Corn</button>
+          <button class="crop-btn" id="btn-soy" onclick="setTab('soy')">Soybeans</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORN TAB -->
+    <div id="tab-corn">
+      <div class="global-row">
+        <div class="global-label">Seeding Rate</div>
+        <div class="global-val" id="rate-display">32,000 /ac</div>
+        <div class="slider-wrap">
+          <input type="range" class="g-range" id="global-rate" min="28000" max="38000" step="1000" value="32000" oninput="recalcCorn()">
+          <div class="p-range-labels"><span>28,000</span><span>33,000</span><span>38,000</span></div>
+        </div>
+      </div>
+
+      <div class="section-header-row" style="margin-top:32px;">
+        <div class="section-label-sm">Hybrids in Your Order</div>
+        <button class="add-btn" onclick="addHybrid()">+ Add Hybrid</button>
+      </div>
+
+      <div class="cards-grid" id="cards-grid"></div>
+    </div>
+
+    <!-- SOY TAB -->
+    <div id="tab-soy" class="hidden">
+      <div class="soy-panel">
+        <div class="soy-header">
+          <div>
+            <div class="soy-tier">Group III · Direct Treated</div>
+            <div class="soy-title">CR Soybeans</div>
+          </div>
+        </div>
+        <div class="soy-prices" style="grid-template-columns: 1fr 1fr;">
+          <div class="soy-price-item">
+            <label>Member Price / K</label>
+            <div class="soy-price-big">$<span>0.43</span></div>
+            <div class="soy-price-sub">per 1,000 seeds · member direct</div>
+          </div>
+          <div class="soy-price-item">
+            <label>Cost Per Acre</label>
+            <div class="soy-price-big" id="soy-cost-per-acre">$60.20</div>
+            <div class="soy-price-sub">at 140,000 seeds/ac</div>
+          </div>
+        </div>
+        <div class="soy-acres-wrap">
+          <div class="acres-label-row" style="margin-bottom:10px;">
+            <span class="acres-tag">Acres to Plant</span>
+            <span class="acres-val" id="soy-acres-display">200 ac</span>
+          </div>
+          <input type="range" class="g-range" id="soy-acres" min="50" max="2000" step="25" value="200" oninput="recalcSoy()">
+          <div class="p-range-labels"><span>50 ac</span><span>1,000 ac</span><span>2,000 ac</span></div>
+        </div>
+      </div>
+      <div class="summary">
+        <div class="summary-label">Soybean Order Summary</div>
+        <div class="summary-grid" style="grid-template-columns: repeat(3,1fr);">
+          <div class="summary-cell"><div class="sum-cell-label">Acres</div><div class="sum-cell-val" id="soy-sum-acres">200</div></div>
+          <div class="summary-cell"><div class="sum-cell-label">Units</div><div class="sum-cell-val" id="soy-sum-units">200</div></div>
+          <div class="summary-cell"><div class="sum-cell-label">Your Cost</div><div class="sum-cell-val" id="soy-sum-our">$12,040</div></div>
+        </div>
+        <div class="savings-bar" style="background:rgba(196,154,90,0.1);border-color:rgba(196,154,90,0.15);">
+          <div class="savings-left">
+            <strong>Total Order — Soybeans</strong>
+            <span>Member PerK pricing · Direct rate</span>
+          </div>
+          <div class="savings-big" style="color:var(--wheat);">$<span id="soy-sum-our-total">12,040</span></div>
+        </div>
+      </div>
+      <div class="patronage-row">
+        <div class="pat-row-left">Annual Patronage Return (2.5%) on this order</div>
+        <div class="pat-row-right" id="soy-patronage-return">$301</div>
+      </div>
+    </div>
+
+    <!-- CORN SUMMARY -->
+    <div id="corn-summary">
+      <div class="summary">
+        <div class="summary-label">Corn Order Summary</div>
+        <div class="summary-grid" style="grid-template-columns: repeat(3,1fr);">
+          <div class="summary-cell"><div class="sum-cell-label">Total Acres</div><div class="sum-cell-val" id="sum-acres">0</div></div>
+          <div class="summary-cell"><div class="sum-cell-label">Total Bags</div><div class="sum-cell-val" id="sum-bags">0</div></div>
+          <div class="summary-cell"><div class="sum-cell-label">Your Cost</div><div class="sum-cell-val" id="sum-our">$0</div></div>
+        </div>
+        <div class="savings-bar" style="background:rgba(196,154,90,0.1);border-color:rgba(196,154,90,0.15);">
+          <div class="savings-left">
+            <strong>Total Order — Corn</strong>
+            <span>Member PerK pricing · Direct rate</span>
+          </div>
+          <div class="savings-big" style="color:var(--wheat);">$<span id="sum-our-total">0</span></div>
+        </div>
+      </div>
+      <div class="patronage-row">
+        <div class="pat-row-left">Annual Patronage Return (2.5%) on this order</div>
+        <div class="pat-row-right" id="corn-patronage-return">$0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SYNDICATE -->
+<section id="syndicate">
+  <div class="section-inner">
+    <div class="section-eyebrow">The Syndicate</div>
+    <h2 class="section-title">Investment access<br><em>built for operators.</em></h2>
+    <p class="section-body">The Syndicate is a private investment community for HomeForty members. Agricultural deal flow. Individual SPVs. Opportunities you can evaluate with your own expertise — not a black box managed by people who have never farmed.</p>
+
+    <div class="syndicate-layout">
+      <div class="syndicate-left">
+        <div class="access-note">Membership Access · HomeForty Members Only</div>
+
+        <p class="syndicate-body">
+          Each investment opportunity in The Syndicate is structured as a separate Special Purpose Vehicle — its own LLC, its own investment, its own cap table. One deal at a time. No blind pools. No obligation to participate in any deal you don't believe in.
+        </p>
+        <p class="syndicate-body">
+          You evaluate each opportunity with the same expertise you apply to your own operation. When you invest, you deploy capital alongside other members who share your knowledge of what works on a farm.
+        </p>
+        <p class="syndicate-body">
+          And when you hold patronage credits you want to put to work, you can elect to roll them directly into an available SPV. Your seed purchases create the investment capital. The program is designed so value compounds.
+        </p>
+
+        <!-- First Deal -->
+        <div class="syndicate-deal">
+          <div class="deal-tag">First Deal · 2026 · Now Forming</div>
+          <div class="deal-title">Biological Input Company</div>
+          <div class="deal-body">
+            An agricultural biologicals company with product ready to sell. Proven model. Experienced team. Biological soil enhancers and bio-pesticides designed to reduce synthetic input costs and improve yields. Revenue-generating today — not a science project. This is a company HomeForty members can trial on their own acres while holding equity in its success.
+          </div>
+          <div class="deal-terms">
+            <div class="deal-term">
+              <div class="deal-term-label">Structure</div>
+              <div class="deal-term-value">SAFE · SPV LLC</div>
+            </div>
+            <div class="deal-term">
+              <div class="deal-term-label">Valuation Cap</div>
+              <div class="deal-term-value">$5M</div>
+            </div>
+            <div class="deal-term">
+              <div class="deal-term-label">Minimum Ticket</div>
+              <div class="deal-term-value">$25,000</div>
+            </div>
+            <div class="deal-term">
+              <div class="deal-term-label">Pool Size</div>
+              <div class="deal-term-value">$500,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="syndicate-right">
+        <div class="why-matters">
+          <div class="wm-title">Why This Is Different</div>
+
+          <div class="wm-item">
+            <div class="wm-dash">—</div>
+            <div class="wm-text">
+              <strong>You Know These Industries</strong>
+              Biologicals, agtech, supply chain, rural infrastructure. These are businesses you can evaluate with your own expertise. No PhD required. No trust in someone else's thesis.
+            </div>
+          </div>
+          <div class="wm-item">
+            <div class="wm-dash">—</div>
+            <div class="wm-text">
+              <strong>Early Entry Advantage</strong>
+              The first deal invests via a SAFE with a $5M valuation cap. When the company raises its Series A, our SAFE converts at $5M-equivalent prices regardless of where the round is priced. Getting in first matters here.
+            </div>
+          </div>
+          <div class="wm-item">
+            <div class="wm-dash">—</div>
+            <div class="wm-text">
+              <strong>Investor-Customer Flywheel</strong>
+              Members who invest in the biological company and trial the product on their own acres aren't just customers. They are the most credible advocates in agriculture — operators with skin in the game on both sides.
+            </div>
+          </div>
+          <div class="wm-item">
+            <div class="wm-dash">—</div>
+            <div class="wm-text">
+              <strong>Deal-by-Deal, No Obligation</strong>
+              Each SPV is a separate decision. You participate in the deals you believe in and pass on the ones you don't. No blind trust. No management fees between deals.
+            </div>
+          </div>
+          <div class="wm-item">
+            <div class="wm-dash">—</div>
+            <div class="wm-text">
+              <strong>Your Patronage Can Fund It</strong>
+              HomeForty members can elect to roll their annual cash patronage allocation directly into a Syndicate SPV. The capital your seed purchases generate can go to work in businesses you believe in.
+            </div>
+          </div>
+        </div>
+
+        <div class="syndicate-disclaimer">
+          The Syndicate is offered only to members who qualify as accredited investors. Investments in early-stage companies carry substantial risk of loss. Past performance of any investment does not guarantee future results. This is not an offer to sell securities. All investments are subject to applicable securities laws and the terms of each SPV's operating agreement.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLY -->
+<section id="apply">
+  <div class="apply-inner">
+    <div class="apply-left">
+      <div class="apply-eyebrow">Request Membership</div>
+      <h2 class="apply-title">HomeForty is earned.<br>Not purchased.</h2>
+      <p class="apply-body">Membership requires a minimum of 500 units of corn purchased or sold annually, an executed NDA, and acceptance by invitation. Tell us about your operation and we'll be in touch.</p>
+
+      <div class="apply-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-input" placeholder="John">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-input" placeholder="Miller">
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Operation Name</label>
+          <input type="text" class="form-input" placeholder="Miller Farms / Colony Name">
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">State</label>
+            <input type="text" class="form-input" placeholder="SD">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Corn Acres</label>
+            <input type="text" class="form-input" placeholder="3,500">
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="john@millerfarms.com">
+        </div>
+        <div class="form-field">
+          <label class="form-label">How did you hear about HomeForty?</label>
+          <input type="text" class="form-input" placeholder="Member referral, sales rep, etc.">
+        </div>
+        <button class="btn-apply" onclick="handleApply(event)">Submit Membership Request</button>
+        <div class="form-note">All information is held in strict confidence. Membership decisions are made within 5 business days. An NDA will be required prior to full program disclosure.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="apply-right-content">
+        <div class="req-item">
+          <div class="req-check">◈</div>
+          <div class="req-text">
+            <div class="req-title">500 Unit Minimum</div>
+            <div class="req-body">HomeForty is for serious operators. 500 units of corn purchased or sold annually is the floor. Colony operations qualify at aggregate acreage.</div>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-check">◈</div>
+          <div class="req-text">
+            <div class="req-title">Non-Disclosure Agreement</div>
+            <div class="req-body">Program terms, patronage rates, retained balances, and Syndicate deal flow are confidential. An NDA is executed at membership and governs the full relationship.</div>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-check">◈</div>
+          <div class="req-text">
+            <div class="req-title">Invitation & Acceptance</div>
+            <div class="req-body">HomeForty is not open enrollment. Applications are reviewed. Founding member cohort is limited. Early commitment carries permanent advantages.</div>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-check">◈</div>
+          <div class="req-text">
+            <div class="req-title">Accredited Investor (Syndicate)</div>
+            <div class="req-body">Syndicate participation requires accredited investor status under applicable securities laws. Patronage program participation does not.</div>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-check">◈</div>
+          <div class="req-text">
+            <div class="req-title">Founding Member Window</div>
+            <div class="req-body">The first 25 members accepted carry Founding Member status — permanent 1.25× credit acceleration and first access to every Syndicate deal. This cohort closes when full.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HomeForty</div>
+  <div class="footer-note">Confidential · For Prospective Members Only · Not a Public Offering</div>
+</footer>
+
+<script>
+  // ── CONSTANTS ──
+  const SEEDS_PER_BAG = 80000;
+  const SOY_SEEDS_PER_UNIT = 140000;
+  const SOY_OUR_PERK = 0.43;
+
+  const CATALOG = [
+    { name: 'CR 11-12', tier: 'Foundation · 111-Day', ourPerk: 3.44 },
+    { name: 'CR 11-45', tier: 'Performance · 111-Day', ourPerk: 3.50 },
+    { name: 'CR 10-78', tier: 'Elite · 107-Day', ourPerk: 3.75 },
+  ];
+
+  let hybrids = [];
+  let idCounter = 0;
+
+  // ── PATRONAGE CALCULATOR ──
+  function updatePatronage() {
+    const purchases = parseInt(document.getElementById('pat-purchases').value);
+    const year = parseInt(document.getElementById('pat-year').value);
+    const projYears = parseInt(document.getElementById('pat-proj-years').value);
+
+    const rate = year >= 5 ? 0.035 : year >= 3 ? 0.03 : 0.025;
+    const rateLabel = year >= 5 ? '3.5%' : year >= 3 ? '3.0%' : '2.5%';
+    const yearLabel = year >= 7 ? 'Year 7+' : `Year ${year}`;
+
+    const total = purchases * rate;
+    const cash = total * 0.5;
+    const retained = total * 0.5;
+
+    // Project retained balance over years with tenure increases
+    let balance = 0;
+    for (let y = 1; y <= projYears; y++) {
+      const r = y >= 5 ? 0.035 : y >= 3 ? 0.03 : 0.025;
+      balance += purchases * r * 0.5;
+    }
+
+    // Hypothetical exit illustration at $20M
+    const exitIllustration = (balance / (balance * 20)) * 0.05 * 20000000;
+
+    document.getElementById('pat-purchase-display').textContent = '$' + purchases.toLocaleString();
+    document.getElementById('pat-year-display').textContent = yearLabel;
+    document.getElementById('pat-years-display').textContent = `${projYears} Year${projYears>1?'s':''}`;
+    document.getElementById('pat-rate-display').textContent = rateLabel;
+    document.getElementById('pat-total-display').textContent = '$' + Math.round(total).toLocaleString();
+    document.getElementById('pat-cash-display').textContent = '$' + Math.round(cash).toLocaleString();
+    document.getElementById('pat-retained-display').textContent = '$' + Math.round(retained).toLocaleString();
+    document.getElementById('pat-balance-display').textContent = '$' + Math.round(balance).toLocaleString();
+    document.getElementById('pat-balance-sub').textContent =
+      `cumulative retained credits after ${projYears} year${projYears>1?'s':''}`;
+  }
+
+  updatePatronage();
+
+  // ── PERK CALCULATOR TAB ──
+  function setTab(tab) {
+    document.getElementById('tab-corn').classList.toggle('hidden', tab !== 'corn');
+    document.getElementById('corn-summary').classList.toggle('hidden', tab !== 'corn');
+    document.getElementById('tab-soy').classList.toggle('hidden', tab !== 'soy');
+    document.getElementById('btn-corn').classList.toggle('active', tab === 'corn');
+    document.getElementById('btn-soy').classList.toggle('active', tab === 'soy');
+  }
+
+  // ── HYBRID CARD MANAGEMENT ──
+  function addHybrid(template) {
+    const t = template || CATALOG[hybrids.length % CATALOG.length];
+    const id = ++idCounter;
+    hybrids.push({ id, name: t.name, tier: t.tier, ourPerk: t.ourPerk, acres: 200 });
+    renderCards();
+  }
+
+  function removeHybrid(id) {
+    hybrids = hybrids.filter(h => h.id !== id);
+    renderCards();
+  }
+
+  function updateHybrid(id, field, val) {
+    const h = hybrids.find(h => h.id === id);
+    if (h) { h[field] = val; recalcCorn(); }
+  }
+
+  function renderCards() {
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = '';
+
+    if (hybrids.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <p>No hybrids in your order yet</p>
+          <button class="add-btn" onclick="addHybrid()" style="margin:0 auto;">+ Add First Hybrid</button>
+        </div>`;
+      recalcCorn();
+      return;
+    }
+
+    const seedingRate = parseInt(document.getElementById('global-rate').value);
+
+    hybrids.forEach(h => {
+      const totalSeeds = h.acres * seedingRate;
+      const bags = Math.ceil(totalSeeds / SEEDS_PER_BAG);
+      const ourCost = bags * (h.ourPerk * SEEDS_PER_BAG / 1000);
+
+      const card = document.createElement('div');
+      card.className = 'hybrid-card';
+      card.id = `card-${h.id}`;
+      card.innerHTML = `
+        <div class="card-top">
+          <div style="flex:1;min-width:0;">
+            <div class="hybrid-tier">${h.tier}</div>
+            <input class="hybrid-name-input" type="text" value="${h.name}"
+              oninput="updateHybrid(${h.id},'name',this.value)">
+          </div>
+          <button class="remove-btn" onclick="removeHybrid(${h.id})">×</button>
+        </div>
+        <div class="price-section" style="grid-template-columns:1fr;">
+          <div class="price-col price-col-our">
+            <label>Member Price /K</label>
+            <div class="price-input-wrap">
+              <span class="price-symbol">$</span>
+              <input class="perk-input" type="number" value="${h.ourPerk.toFixed(2)}" step="0.01" min="1" max="10"
+                onchange="updateHybrid(${h.id},'ourPerk',parseFloat(this.value)||h.ourPerk);renderCards();">
+              <span class="perk-k">/K</span>
+            </div>
+          </div>
+        </div>
+        <div class="acres-row">
+          <div class="acres-label-row">
+            <span class="acres-tag">Acres</span>
+            <span class="acres-val" id="av-${h.id}">${h.acres} ac</span>
+          </div>
+          <input type="range" class="card-range" min="25" max="2000" step="25" value="${h.acres}"
+            oninput="
+              updateHybrid(${h.id},'acres',parseInt(this.value));
+              document.getElementById('av-${h.id}').textContent=this.value+' ac';
+              renderCards();
+            ">
+          <div class="card-range-labels"><span>25 ac</span><span>2,000 ac</span></div>
+        </div>
+        <div class="card-footer">
+          <div class="card-footer-left">
+            <div class="card-cost-label">Hybrid Cost</div>
+            <div class="card-bags">${bags} bags needed</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="card-cost-value">$${Math.round(ourCost).toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    recalcCorn();
+  }
+
+  function recalcCorn() {
+    const seedingRate = parseInt(document.getElementById('global-rate').value);
+    document.getElementById('rate-display').textContent = (seedingRate/1000).toFixed(0) + ',000 /ac';
+
+    let totalAcres=0, totalBags=0, totalOur=0;
+
+    hybrids.forEach(h => {
+      const totalSeeds = h.acres * seedingRate;
+      const bags = Math.ceil(totalSeeds / SEEDS_PER_BAG);
+      totalAcres += h.acres;
+      totalBags += bags;
+      totalOur += bags * (h.ourPerk * SEEDS_PER_BAG / 1000);
+    });
+
+    const patronage = totalOur * 0.025;
+
+    document.getElementById('sum-acres').textContent = totalAcres.toLocaleString();
+    document.getElementById('sum-bags').textContent = totalBags.toLocaleString();
+    document.getElementById('sum-our').textContent = '$' + Math.round(totalOur).toLocaleString();
+    document.getElementById('sum-our-total').textContent = Math.round(totalOur).toLocaleString();
+    document.getElementById('corn-patronage-return').textContent = '$' + Math.round(patronage).toLocaleString();
+  }
+
+  function recalcSoy() {
+    const acres = parseInt(document.getElementById('soy-acres').value);
+
+    document.getElementById('soy-acres-display').textContent = acres.toLocaleString() + ' ac';
+
+    const totalSeeds = acres * SOY_SEEDS_PER_UNIT;
+    const ourCost = (totalSeeds / 1000) * SOY_OUR_PERK;
+    const costPerAcre = SOY_OUR_PERK * (SOY_SEEDS_PER_UNIT / 1000);
+    const patronage = ourCost * 0.025;
+
+    document.getElementById('soy-cost-per-acre').textContent = '$' + costPerAcre.toFixed(2);
+    document.getElementById('soy-sum-acres').textContent = acres.toLocaleString();
+    document.getElementById('soy-sum-units').textContent = Math.ceil(acres).toLocaleString();
+    document.getElementById('soy-sum-our').textContent = '$' + Math.round(ourCost).toLocaleString();
+    document.getElementById('soy-sum-our-total').textContent = Math.round(ourCost).toLocaleString();
+    document.getElementById('soy-patronage-return').textContent = '$' + Math.round(patronage).toLocaleString();
+  }
+
+  function handleApply(e) {
+    e.preventDefault();
+    const btn = e.target;
+    btn.textContent = 'Request Submitted — We\'ll Be In Touch';
+    btn.style.background = 'var(--leaf)';
+    btn.style.color = 'var(--cream)';
+    btn.disabled = true;
+  }
+
+  // ── INIT ──
+  CATALOG.forEach(t => addHybrid(t));
+  recalcSoy();
+</script>
+</body>
+</html>
